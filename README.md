@@ -1,2 +1,0 @@
-# kodi
-To install Kodi
