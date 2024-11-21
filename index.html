@@ -1,2 +1,97 @@
 <!DOCTYPE html>
-<a href="ADDON_ID_HERE-VERSION_NUMBER_HERE.zip">ADDON_ID_HERE-VERSION_NUMBER_HERE.zip</a>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodi Repository File List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #2e3b4e;
+            color: #f4f4f4;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1c2533;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+        a {
+            color: #1fa2ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .error {
+            color: #ff4d4d;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kodi Repository File List</h1>
+        <ul id="file-list">
+            <!-- Files will be listed here -->
+        </ul>
+        <div id="error-message" class="error"></div>
+    </div>
+
+    <script>
+        const username = "perruche69"; // GitHub username for Kodi repository
+        const repository = "kodi"; // Repository name for Kodi
+        const apiURL = `https://api.github.com/repos/${username}/${repository}/contents/`;
+
+        async function fetchFiles() {
+            try {
+                const response = await fetch(apiURL);
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} ${response.statusText}`);
+                }
+                const files = await response.json();
+                const fileList = document.getElementById('file-list');
+                fileList.innerHTML = '';
+
+                if (files.length === 0) {
+                    fileList.innerHTML = '<li>No files found in this repository.</li>';
+                } else {
+                    files.forEach(file => {
+                        const listItem = document.createElement('li');
+                        const link = document.createElement('a');
+                        link.href = file.html_url;
+                        link.textContent = file.name;
+                        link.target = "_blank";
+                        listItem.appendChild(link);
+                        fileList.appendChild(listItem);
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to fetch files:", error);
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = "Failed to load files. Please try again later.";
+            }
+        }
+
+        fetchFiles();
+    </script>
+</body>
+</html>
