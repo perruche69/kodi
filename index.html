@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZIP File Downloader</title>
+    <title>Kodi ZIP Files</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -43,23 +43,25 @@
 </head>
 <body>
     <div class="container">
-        <h1>Available ZIP Files</h1>
+        <h1>Kodi ZIP Files</h1>
         <ul id="zip-files">
-            <!-- ZIP files will be listed here -->
+            <!-- ZIP files will be dynamically listed here -->
         </ul>
     </div>
 
     <script>
         async function listZipFiles() {
             try {
+                // Fetch the current directory listing
                 const response = await fetch(window.location.href);
                 const text = await response.text();
 
-                // Parse the directory listing (assumes a simple auto-index or directory listing page)
+                // Parse the directory listing
                 const parser = new DOMParser();
                 const htmlDoc = parser.parseFromString(text, "text/html");
                 const links = htmlDoc.querySelectorAll("a");
 
+                // Filter and list only .zip files
                 const zipFiles = Array.from(links).filter(link => link.href.endsWith(".zip"));
 
                 const fileList = document.getElementById("zip-files");
@@ -71,7 +73,7 @@
                         const anchor = document.createElement("a");
                         anchor.href = file.href;
                         anchor.textContent = file.textContent;
-                        anchor.download = file.textContent;
+                        anchor.download = file.textContent; // Allow direct download
                         listItem.appendChild(anchor);
                         fileList.appendChild(listItem);
                     });
