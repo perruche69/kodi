@@ -3,27 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kodi ZIP Files</title>
+    <title>List of ZIP Files</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #2e3b4e;
-            color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #1c2533;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin: 20px;
         }
         h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
+            color: #333;
         }
         ul {
             list-style: none;
@@ -33,8 +20,8 @@
             margin: 10px 0;
         }
         a {
-            color: #1fa2ff;
             text-decoration: none;
+            color: #007BFF;
         }
         a:hover {
             text-decoration: underline;
@@ -42,50 +29,43 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Kodi ZIP Files</h1>
-        <ul id="zip-files">
-            <!-- ZIP files will be dynamically listed here -->
-        </ul>
-    </div>
+    <h1>List of ZIP Files</h1>
+    <ul id="file-list"></ul>
 
     <script>
-        async function listZipFiles() {
+        const owner = "perruche69"; // Replace with the GitHub owner name
+        const repo = "kodi"; // Replace with the repository name
+        const folder_path = "kodi"; // Replace with the folder path inside the repository
+
+        async function fetchZipFiles() {
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folder_path}`;
             try {
-                // Fetch the current directory listing
-                const response = await fetch(window.location.href);
-                const text = await response.text();
-
-                // Parse the directory listing
-                const parser = new DOMParser();
-                const htmlDoc = parser.parseFromString(text, "text/html");
-                const links = htmlDoc.querySelectorAll("a");
-
-                // Filter and list only .zip files
-                const zipFiles = Array.from(links).filter(link => link.href.endsWith(".zip"));
-
-                const fileList = document.getElementById("zip-files");
-                if (zipFiles.length === 0) {
-                    fileList.innerHTML = "<li>No ZIP files found.</li>";
-                } else {
-                    zipFiles.forEach(file => {
-                        const listItem = document.createElement("li");
-                        const anchor = document.createElement("a");
-                        anchor.href = file.href;
-                        anchor.textContent = file.textContent;
-                        anchor.download = file.textContent; // Allow direct download
-                        listItem.appendChild(anchor);
-                        fileList.appendChild(listItem);
-                    });
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`Error fetching files: ${response.statusText}`);
                 }
+                const files = await response.json();
+                const fileList = document.getElementById("file-list");
+
+                files.forEach(file => {
+                    if (file.name.endsWith(".zip")) {
+                        const listItem = document.createElement("li");
+                        const link = document.createElement("a");
+                        link.href = file.download_url;
+                        link.textContent = file.name;
+                        link.target = "_blank";
+                        listItem.appendChild(link);
+                        fileList.appendChild(listItem);
+                    }
+                });
             } catch (error) {
-                console.error("Error listing ZIP files:", error);
-                document.getElementById("zip-files").innerHTML =
-                    "<li>Error loading ZIP files. Please try again later.</li>";
+                console.error("Failed to fetch ZIP files:", error);
+                const fileList = document.getElementById("file-list");
+                fileList.innerHTML = `<li>Error: ${error.message}</li>`;
             }
         }
 
-        listZipFiles();
+        fetchZipFiles();
     </script>
 </body>
 </html>
