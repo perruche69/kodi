@@ -38,7 +38,7 @@
         const folder_path = ""; // Replace with the folder path inside the repository
 
         async function fetchZipFiles() {
-            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${folder_path}`;
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents`;
             try {
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
